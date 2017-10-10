@@ -70,52 +70,7 @@ function traverser (ast, visitor) {
   traverseNode(ast, null)
 }
 
-/**
-   * ============================================================================
-   *                                   ⁽(◍˃̵͈̑ᴗ˂̵͈̑)⁽
-   *                                   转换器!!!
-   * ============================================================================
-   */
 
-/**
-   * 下面是转换器。转换器接收我们在之前构建好的 AST，然后把它和 visitor 传递进入我们的遍历
-   * 器中 ，最后得到一个新的 AST。
-   *
-   * ----------------------------------------------------------------------------
-   *            原始的 AST               |               转换后的 AST
-   * ----------------------------------------------------------------------------
-   *   {                                |   {
-   *     type: 'Program',               |     type: 'Program',
-   *     body: [{                       |     body: [{
-   *       type: 'CallExpression',      |       type: 'ExpressionStatement',
-   *       name: 'add',                 |       expression: {
-   *       params: [{                   |         type: 'CallExpression',
-   *         type: 'NumberLiteral',     |         callee: {
-   *         value: '2'                 |           type: 'Identifier',
-   *       }, {                         |           name: 'add'
-   *         type: 'CallExpression',    |         },
-   *         name: 'subtract',          |         arguments: [{
-   *         params: [{                 |           type: 'NumberLiteral',
-   *           type: 'NumberLiteral',   |           value: '2'
-   *           value: '4'               |         }, {
-   *         }, {                       |           type: 'CallExpression',
-   *           type: 'NumberLiteral',   |           callee: {
-   *           value: '2'               |             type: 'Identifier',
-   *         }]                         |             name: 'subtract'
-   *       }]                           |           },
-   *     }]                             |           arguments: [{
-   *   }                                |             type: 'NumberLiteral',
-   *                                    |             value: '4'
-   * ---------------------------------- |           }, {
-   *                                    |             type: 'NumberLiteral',
-   *                                    |             value: '2'
-   *                                    |           }]
-   *         (那一边比较长/w\)            |         }]
-   *                                    |       }
-   *                                    |     }]
-   *                                    |   }
-   * ----------------------------------------------------------------------------
-   */
 
 // 定义我们的转换器函数，接收 AST 作为参数
 function transformer (ast) {
@@ -162,11 +117,10 @@ function transformer (ast) {
       // 然后来看看父结点是不是一个 `CallExpression`，如果不是...
       if (parent.type !== 'CallExpression') {
         // 我们把 `CallExpression` 结点包在一个 `ExpressionStatement` 中，这么做是因为
-        // 单独存在（原文为top level）的 `CallExpressions` 在 JavaScript 中也可以被当做
-        // 是声明语句。
-        //
-        // 译者注：比如 `var a = foo()` 与 `foo()`，后者既可以当作表达式给某个变量赋值，也
-        // 可以作为一个独立的语句存在。
+        // top level 的 `CallExpressions` 在 JavaScript 中也可以被当做是声明语句。
+        // add(2, substract(3, 4)) => ExpressionStatement
+        // var b = add(2, substract(3, 4)) => VariableDeclarator
+        // https://astexplorer.net/#/gist/10e96e0ece2793722b973db7b200acec/a4b10d31d07770750ca88377bb5ecfe3684a0534
         expression = {
           type: 'ExpressionStatement',
           expression: expression

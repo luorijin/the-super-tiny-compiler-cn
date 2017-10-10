@@ -77,7 +77,7 @@ function tokenizer (input) {
     //        这里只有两个 token
     //
     // 当我们遇到一个数字字符时，将会从这里开始。
-    var NUMBERS = /[1-9]/
+    var NUMBERS = /[0-9]/
     if (NUMBERS.test(char)) {
       // 创建一个 `value` 字符串，用于 push 字符。
       var value = ''

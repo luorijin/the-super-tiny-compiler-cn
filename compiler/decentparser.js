@@ -64,9 +64,8 @@ function parser (tokens) {
 
   function walkParam () {
     var token = tokens[current]
-    // 检查是不是 `number` 类型
+
     if (token.type === 'number') {
-      // 如果是，`current` 自增。
       return walkNumber()
     }
 
@@ -86,7 +85,6 @@ function parser (tokens) {
     }
   }
 
-  // 最后我们的语法分析器返回 AST
   return walkProgram()
 }
 
